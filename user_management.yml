@@ -1,0 +1,20 @@
+---
+- name: Configure Utility Server for User Management
+  hosts: utility_servers
+  become: yes
+  tasks:
+    - name: 2. Create devops_team system group
+      ansible.builtin.group:
+        name: devops_team
+        gid: 5000
+        state: present
+        system: yes
+
+    - name: 3. Create app_admin user and add to devops_team
+      ansible.builtin.user:
+        name: app_admin
+        group: devops_team
+        home: /home/app_admin
+        shell: /bin/bash
+        state: present
+        create_home: yes

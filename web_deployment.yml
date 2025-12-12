@@ -1,0 +1,32 @@
+---
+- name: Deploy Web Application and Configure Apache
+  hosts: frontend_servers
+  become: yes
+
+  tasks:
+    - name: 2. Install Apache web server (apache2)
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: 4a. Ensure Apache service is started and enabled
+      ansible.builtin.service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: 3. Deploy custom Apache configuration
+      ansible.builtin.copy:
+        src: custom_vhost.conf
+        dest: /etc/apache2/conf-available/custom.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      ansible.builtin.service:
+        name: apache2
+        state: restarted
